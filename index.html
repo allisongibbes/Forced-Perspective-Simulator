@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forced Perspective Simulator</title>
+    <style>
+        :root {
+            --bg-color: #1e1e2f;
+            --panel-bg: #2a2a40;
+            --text-color: #f0f0f5;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .panel {
+            background-color: var(--panel-bg);
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 { text-align: center; margin-top: 0; }
+        .camera-view {
+            width: 100%;
+            height: 200px;
+            background: #87CEEB; /* Sky blue */
+            border: 4px solid #111;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: #2e8b57; /* Grass */
+        }
+        .actor {
+            position: absolute;
+            bottom: 40px;
+            left: 25%;
+            font-size: 60px;
+            line-height: 1;
+            z-index: 2;
+            transition: transform 0.2s;
+        }
+        .prop {
+            position: absolute;
+            bottom: 50px;
+            right: 25%;
+            font-size: 60px;
+            line-height: 1;
+            z-index: 1;
+            transition: transform 0.2s, bottom 0.2s;
+        }
+        .controls {
+            width: 100%;
+            text-align: center;
+        }
+        input[type="range"] {
+            width: 80%;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel">
+        <h2>Forced Perspective</h2>
+        <p style="font-size: 14px; text-align: center;">Move the slider to push the monster further away from the camera lens to manipulate its perceived scale.</p>
+        <div class="camera-view">
+            <div class="ground"></div>
+            <div class="actor">🚶</div>
+            <div class="prop" id="monster">🦖</div>
+        </div>
+        <div class="controls">
+            <label for="distanceSlider">Distance of Monster from Camera:</label><br>
+            <span>Close</span>
+            <input type="range" id="distanceSlider" min="1" max="100" value="1">
+            <span>Far</span>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('distanceSlider');
+        const monster = document.getElementById('monster');
+
+        slider.addEventListener('input', (e) => {
+            const distance = e.target.value;
+            // Scale down and adjust vertical position to maintain perspective
+            const scaleValue = 1 - (distance * 0.007); 
+            const bottomValue = 50 + (distance * 0.3);
+            
+            monster.style.transform = `scale(${scaleValue})`;
+            monster.style.bottom = `${bottomValue}px`;
+            
+            // Adjust z-index based on perceived depth
+            if (distance > 30) {
+                monster.style.zIndex = 1; // Behind actor
+            } else {
+                monster.style.zIndex = 3; // In front of actor
+            }
+        });
+    </script>
+</body>
+</html>
